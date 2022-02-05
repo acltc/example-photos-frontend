@@ -5,6 +5,7 @@ export default {
     return {
       photos: [],
       newPhotoParams: {},
+      editPhotoParams: {},
       currentPhoto: {},
     };
   },
@@ -32,7 +33,19 @@ export default {
     },
     showPhoto: function (photo) {
       this.currentPhoto = photo;
+      this.editPhotoParams = photo;
       document.querySelector("#photo-details").showModal();
+    },
+    updatePhoto: function (photo) {
+      axios
+        .patch("/photos/" + photo.id, this.editPhotoParams)
+        .then((response) => {
+          console.log("photos update", response);
+          this.currentPhoto = {};
+        })
+        .catch((error) => {
+          console.log("photos update error", error.response);
+        });
     },
   },
 };
@@ -63,10 +76,23 @@ export default {
     <dialog id="photo-details">
       <form method="dialog">
         <h1>Photo info</h1>
-        <p>Name: {{ currentPhoto.name }}</p>
-        <p>Width: {{ currentPhoto.width }}</p>
-        <p>Height: {{ currentPhoto.height }}</p>
-        <p>Url: {{ currentPhoto.url }}</p>
+        <p>
+          Name:
+          <input type="text" v-model="editPhotoParams.name" />
+        </p>
+        <p>
+          Width:
+          <input type="text" v-model="editPhotoParams.width" />
+        </p>
+        <p>
+          Height:
+          <input type="text" v-model="editPhotoParams.height" />
+        </p>
+        <p>
+          Url:
+          <input type="text" v-model="editPhotoParams.url" />
+        </p>
+        <button v-on:click="updatePhoto(currentPhoto)">Update</button>
         <button>Close</button>
       </form>
     </dialog>
